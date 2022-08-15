@@ -33,8 +33,10 @@
 }
 
 .movie-library__list {
-  padding: 1em;
   background-color: #222222;
+  justify-content: space-around;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .movie-library__card {

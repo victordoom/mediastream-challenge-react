@@ -19,6 +19,8 @@ export default function Exercise02 () {
   const [movies, setMovies] = useState([])
   const [fetchCount, setFetchCount] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [genre, setGenre] = useState([])
+  const [filterlist, setFilterlist] = useState([])
 
   const handleMovieFetch = () => {
     setLoading(true)
@@ -28,16 +30,40 @@ export default function Exercise02 () {
       .then(res => res.json())
       .then(json => {
         setMovies(json)
+        setFilterlist(json)
         setLoading(false)
       })
       .catch(() => {
         console.log('Run yarn movie-api for fake api')
+      });
+
+      setLoading(true)
+      console.log('Genres')
+      fetch('http://localhost:3001/genres')
+      .then(res => res.json())
+      .then(json => {
+        setGenre(json)
+        setLoading(false)
       })
+      .catch(() => {
+        console.log('error generos')
+      })
+      console.log(JSON.stringify(genre))
+  }
+
+  const filter = ({target}) => {
+    console.log('filtro')
+    console.log(target.value)
+    const seed = movies
+    const newlist = seed.filter((mo) => mo.genres.includes(target.value));
+    console.log(newlist)
+    setFilterlist(newlist)
+
   }
 
   useEffect(() => {
     handleMovieFetch()
-  }, [handleMovieFetch])
+  }, [])
 
   return (
     <section className="movie-library">
@@ -45,8 +71,13 @@ export default function Exercise02 () {
         Movie Library
       </h1>
       <div className="movie-library__actions">
-        <select name="genre" placeholder="Search by genre...">
-          <option value="genre1">Genre 1</option>
+        <select name="genre" placeholder="Search by genre..."  onChange={(val) => filter(val)}>
+        <option disabled selected value> -- select an option -- </option>
+          {
+            genre.map((op) => (
+              <option value={op} key={op}>{op}</option>
+            ))
+          }
         </select>
         <button>Order Descending</button>
       </div>
@@ -57,7 +88,7 @@ export default function Exercise02 () {
         </div>
       ) : (
         <ul className="movie-library__list">
-          {movies.map(movie => (
+          {filterlist.map(movie => (
             <li key={movie.id} className="movie-library__card">
               <img src={movie.posterUrl} alt={movie.title} />
               <ul>
